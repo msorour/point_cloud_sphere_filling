@@ -1,5 +1,5 @@
 // how to use:
-// reset && cmake .. && make && ./point_cloud_as_a_set_of_spheres ../finger_workspace_pcd/middle_workspace.pcd false ../finger_workspace_spheres/middle_workspace_spheres 0.015 0.032 0.001 1.5 50 10 5 255 0 0
+// reset && cmake .. && make && ./point_cloud_as_a_set_of_spheres ../pcd_files/thumb_workspace.pcd false ../spheres/thumb_workspace_spheres_0.005_0.01_1.7_50 0.005 0.01 0.001 1.7 30 50 5 255 0 0
 
 #include <iostream>
 #include <fstream>
@@ -17,8 +17,7 @@
 #include <time.h>
 #include <pcl/common/transforms.h>
 
-#include "include/useful_implementations.h"
-#include "include/grasping_algorithm.h"
+#include "include/sphere_filling_algorithm.h"
 
 
 int main(int argc, char **argv){
@@ -40,33 +39,34 @@ int main(int argc, char **argv){
   int blue                            = std::stoi( argv[13] );
   
   // point cloud declarations
-  pcl::PointCloud<pcl::PointXYZ>::Ptr       finger_workspace_cloud_xyz                    (new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::PointCloud<pcl::PointXYZ>::Ptr       finger_workspace_spheres_visualization_xyz    (new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::PointCloud<pcl::PointXYZ>::Ptr       finger_workspace_spheres_filtered_xyz         (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr   input_point_cloud_xyz       (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr   spheres_visualization_xyz   (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr   spheres_filtered_xyz        (new pcl::PointCloud<pcl::PointXYZ>);
   
   pcl::PolygonMesh mesh_out;
   pcl::ConcaveHull<pcl::PointXYZ> concave_hull;
   pcl::PointXYZ point_xyz;
   
   // load the finger workspace point cloud
-  pcl::io::loadPCDFile<pcl::PointXYZ>(workspace_cloud_file, *finger_workspace_cloud_xyz);
-  std::cout << "finger_workspace_cloud_xyz: " << finger_workspace_cloud_xyz->size() << std::endl;
+  pcl::io::loadPCDFile<pcl::PointXYZ>(workspace_cloud_file, *input_point_cloud_xyz);
+  std::cout << "input point cloud size: " << input_point_cloud_xyz->size() << std::endl;
   
   // for visualization
   boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer(new pcl::visualization::PCLVisualizer ("point cloud visulaizer"));
   
+  // for a png photo of the resulting spheres
   //viewer->setCameraPosition(0.478147, -0.142372, 0.435734, 0.0205253, 0.0659763, -0.00441103, -0.640249, 0.174233, 0.748147, 0);      // thumb
   viewer->setCameraPosition(0.518683, -0.44194, 0.433086, 0.00736115, 0.0825679, 0.090681, -0.322523, 0.276551, 0.905262, 0);           // middle
   viewer->addCoordinateSystem(0.15);
   viewer->setBackgroundColor(255,255,255);
   
-  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> black  (finger_workspace_cloud_xyz, 0, 0, 0);
-  viewer->addPointCloud<pcl::PointXYZ>(finger_workspace_cloud_xyz, black, "workspace cloud");
-  viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "workspace cloud");
+  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> black  (input_point_cloud_xyz, 0, 0, 0);
+  viewer->addPointCloud<pcl::PointXYZ>(input_point_cloud_xyz, black, "input point cloud");
+  viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "input point cloud");
   
-  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> workspace_spheres_color  (finger_workspace_spheres_visualization_xyz, red, green, blue);
-  viewer->addPointCloud<pcl::PointXYZ>(finger_workspace_spheres_visualization_xyz, workspace_spheres_color, "finger spheres");
-  viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "finger spheres");
+  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> spheres_color  (spheres_visualization_xyz, red, green, blue);
+  viewer->addPointCloud<pcl::PointXYZ>(spheres_visualization_xyz, spheres_color, "spheres");
+  viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "spheres");
   
   
   // get the set of spheres filling the workspace point cloud,
@@ -76,11 +76,11 @@ int main(int argc, char **argv){
   ///
   ///
   std::vector<double> sphere_radius_filtered;
-  point_cloud_as_set_of_spheres( desired_number_of_spheres, finger_workspace_cloud_xyz, radius_of_smallest_sphere, radius_of_largest_sphere, sphere_radius_increment, overlap_distance, iterations, sphere_point_cloud_samples, finger_workspace_spheres_filtered_xyz, sphere_radius_filtered, finger_workspace_spheres_visualization_xyz, far_point_in_pos_direction_4d, far_point_in_neg_direction_4d );
+  point_cloud_as_set_of_spheres( desired_number_of_spheres, input_point_cloud_xyz, radius_of_smallest_sphere, radius_of_largest_sphere, sphere_radius_increment, overlap_distance, iterations, sphere_point_cloud_samples, spheres_filtered_xyz, sphere_radius_filtered, spheres_visualization_xyz, far_point_in_pos_direction_4d, far_point_in_neg_direction_4d );
   
-  //point_cloud_as_set_of_spheres_fixed_radius_paper_photos( finger_workspace_cloud_xyz, 0.020, iterations, sphere_point_cloud_samples, finger_workspace_spheres_filtered_xyz, finger_workspace_spheres_visualization_xyz, far_point_in_pos_direction_4d, far_point_in_neg_direction_4d );
-  //finger_workspace_spheres_visualization_xyz->clear();
-  std::cout << "finger_workspace_spheres_filtered_xyz: " << finger_workspace_spheres_filtered_xyz->size() << std::endl;
+  //point_cloud_as_set_of_spheres_fixed_radius_paper_photos( input_point_cloud_xyz, 0.020, iterations, sphere_point_cloud_samples, spheres_filtered_xyz, spheres_visualization_xyz, far_point_in_pos_direction_4d, far_point_in_neg_direction_4d );
+  //spheres_visualization_xyz->clear();
+  std::cout << "number of filtered spheres: " << spheres_filtered_xyz->size() << std::endl;
   
   // drawing the far points
   //point_xyz.x = far_point_in_pos_direction_4d(0);   point_xyz.y = far_point_in_pos_direction_4d(1);   point_xyz.z = far_point_in_pos_direction_4d(2);
@@ -88,13 +88,12 @@ int main(int argc, char **argv){
   //point_xyz.x = far_point_in_neg_direction_4d(0);   point_xyz.y = far_point_in_neg_direction_4d(1);   point_xyz.z = far_point_in_neg_direction_4d(2);
   //viewer->addSphere<pcl::PointXYZ>(point_xyz, 0.005, 0.0, 0.0, 1.0, "far point neg");
   
-  std::cout << "finger_workspace_spheres_visualization_xyz: " << finger_workspace_spheres_visualization_xyz->size() << std::endl;
-  viewer->updatePointCloud(finger_workspace_spheres_visualization_xyz, workspace_spheres_color, "finger spheres");
+  viewer->updatePointCloud(spheres_visualization_xyz, spheres_color, "spheres");
   
   
   if(show_concave_hull=="true"){
     // draw the concave hull to make sure no generated spheres are outside the workspace point cloud
-    concave_hull.setInputCloud( finger_workspace_cloud_xyz );
+    concave_hull.setInputCloud( input_point_cloud_xyz );
     concave_hull.setAlpha( 0.01f );
     concave_hull.reconstruct( mesh_out );
     viewer->addPolygonMesh(mesh_out,"hull");
@@ -102,14 +101,14 @@ int main(int argc, char **argv){
   
   
   // to save the spheres data
-  ofstream workspace_spheres;
+  ofstream spheres;
   std::string file_name;
   file_name = save_spheres_file_name + std::string(".txt");
-  workspace_spheres.open( file_name.c_str() );
-  workspace_spheres << "r, "<<"offset_x, "<<"offset_y, "<<"offset_z"<<"\n";
-  for(int i=0; i<finger_workspace_spheres_filtered_xyz->size(); i++)
-    workspace_spheres << sphere_radius_filtered[i]<<", "<< finger_workspace_spheres_filtered_xyz->points[i].x<<", "<< finger_workspace_spheres_filtered_xyz->points[i].y<<", "<< finger_workspace_spheres_filtered_xyz->points[i].z<<"\n";
-  workspace_spheres.close();
+  spheres.open( file_name.c_str() );
+  spheres << "r, "<<"offset_x, "<<"offset_y, "<<"offset_z"<<"\n";
+  for(int i=0; i<spheres_filtered_xyz->size(); i++)
+    spheres << sphere_radius_filtered[i]<<", "<< spheres_filtered_xyz->points[i].x<<", "<< spheres_filtered_xyz->points[i].y<<", "<< spheres_filtered_xyz->points[i].z<<"\n";
+  spheres.close();
   
   
 	std::string save_spheres_photo_file_name;
