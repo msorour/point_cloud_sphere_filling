@@ -240,7 +240,7 @@ void point_cloud_as_set_of_spheres( int desired_number_of_spheres,              
   std::vector<double> sphere_radius_dummy;
   //std::vector<double> sphere_radius_filtered;
   int number_of_increments = ceil((radius_of_largest_sphere - radius_of_smallest_sphere)/sphere_radius_increment);
-  for(int i=0; i<number_of_increments; i++)
+  for(int i=0; i<number_of_increments+1; i++)
     sphere_radius.push_back( radius_of_largest_sphere-i*sphere_radius_increment );
   
   for(int i=0; i<sphere_radius.size(); i++){
