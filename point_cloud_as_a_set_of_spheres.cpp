@@ -110,7 +110,14 @@ int main(int argc, char **argv){
     spheres << sphere_radius_filtered[i]<<", "<< spheres_filtered_xyz->points[i].x<<", "<< spheres_filtered_xyz->points[i].y<<", "<< spheres_filtered_xyz->points[i].z<<"\n";
   spheres.close();
   
-  
+  // save spheres point cloud
+	spheres_visualization_xyz->width = 1;
+	spheres_visualization_xyz->height = spheres_visualization_xyz->points.size();
+	std::string save_spheres_point_cloud_file_name;
+	save_spheres_point_cloud_file_name = save_spheres_file_name + std::string(".pcd");
+	pcl::io::savePCDFileASCII (save_spheres_point_cloud_file_name, *spheres_visualization_xyz);
+	
+	
 	std::string save_spheres_photo_file_name;
 	save_spheres_photo_file_name = save_spheres_file_name + std::string(".png");
 	//std::string save_file_name = "middle_point_cloud_plus_far_points.png";

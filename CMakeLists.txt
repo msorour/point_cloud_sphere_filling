@@ -24,13 +24,6 @@ add_definitions(${PCL_DEFINITIONS})
 #set (CMAKE_CXX_FLAGS "-O2 -Wall")
 set (CMAKE_CXX_STANDARD 11)
 
-
 add_executable(point_cloud_as_a_set_of_spheres point_cloud_as_a_set_of_spheres.cpp)
 target_link_libraries(point_cloud_as_a_set_of_spheres pthread ${PCL_LIBRARIES})
-
-#add_executable (registering_and_downsampling_3_view_point_clouds registering_and_downsampling_3_view_point_clouds.cpp)
-#target_link_libraries (registering_and_downsampling_3_view_point_clouds ${PCL_LIBRARIES}  ${roscpp_LIBRARIES} ${catkin_LIBRARIES})
-
-#add_executable (visualize_allegro_hand_workspace_spheres visualize_allegro_hand_workspace_spheres.cpp)
-#target_link_libraries (visualize_allegro_hand_workspace_spheres ${PCL_LIBRARIES} quadprog)
 
