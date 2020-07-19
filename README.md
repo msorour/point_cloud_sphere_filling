@@ -1,7 +1,9 @@
 # point_cloud_sphere_filling
 
 <b>Example of usage</b>
+
 <code> cd point_cloud_sphere_filling/ && mkdir build && cd build </code>
+
 <code> reset && cmake .. && make && ./point_cloud_as_a_set_of_spheres ../pcd_files/thumb_workspace.pcd false ../spheres/thumb_workspace_spheres_0.005_0.01_1.7_50 0.005 0.01 0.001 1.7 30 50 5 255 0 0 </code>
 
 <b>Inputs</b>
