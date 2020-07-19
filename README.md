@@ -1,8 +1,8 @@
 # point_cloud_sphere_filling
 
 <b>Example of usage</b>
->> cd point_cloud_sphere_filling/ && mkdir build && cd build
->> reset && cmake .. && make && ./point_cloud_as_a_set_of_spheres ../pcd_files/thumb_workspace.pcd false ../spheres/thumb_workspace_spheres_0.005_0.01_1.7_50 0.005 0.01 0.001 1.7 30 50 5 255 0 0
+<code> cd point_cloud_sphere_filling/ && mkdir build && cd build </code>
+<code> reset && cmake .. && make && ./point_cloud_as_a_set_of_spheres ../pcd_files/thumb_workspace.pcd false ../spheres/thumb_workspace_spheres_0.005_0.01_1.7_50 0.005 0.01 0.001 1.7 30 50 5 255 0 0 </code>
 
 <b>Inputs</b>
 1.  point cloud to be filled with spheres (the more points it has, the better but on the cost of longer execution time.)
@@ -15,7 +15,7 @@
 8.  [for visualizing the filling spheres] the number of points to draw each of the resulting spheres, in the output spheres point cloud.
 9.  desired number of spheres filling the input point cloud.
 10. number of iterations, in each iteration the spheres constructed are slightly shifted from the previous iteration, in order to get better coverage of the input point cloud.
-11. 12. 13. the rgb values for coloring the output point cloud (merely for visualizing the output spheres).
+11. the rgb values for coloring the output point cloud (merely for visualizing the output spheres).
 
 <b>Outputs</b>
 1. a text file containing a list of the resulting spheres, each entry (sphere) holds the x, y, z coordinates of one sphere center and its radius.
